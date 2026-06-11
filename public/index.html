@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bypass Link Shortener | Free Tool</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Courier New', monospace;
+            background: linear-gradient(135deg, #0a0f1e 0%, #0a1a2a 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        .container {
+            background: rgba(10, 25, 40, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 700px;
+            width: 100%;
+            border: 1px solid #00ff88;
+            box-shadow: 0 0 50px rgba(0,255,136,0.2);
+        }
+        h1 { color: #00ff88; text-align: center; margin-bottom: 10px; text-shadow: 0 0 10px #00ff88; }
+        .sub { text-align: center; color: #8899aa; margin-bottom: 30px; font-size: 12px; }
+        input, textarea {
+            width: 100%; padding: 15px; background: #0a1a2a; border: 1px solid #2a4a6a;
+            color: #00ff88; border-radius: 10px; font-size: 14px; margin-bottom: 15px;
+            font-family: monospace;
+        }
+        input:focus, textarea:focus { outline: none; border-color: #00ff88; box-shadow: 0 0 10px rgba(0,255,136,0.3); }
+        button {
+            background: #00ff88; color: #0a0f1e; border: none; padding: 15px 30px;
+            border-radius: 10px; font-size: 16px; font-weight: bold; cursor: pointer;
+            width: 100%; font-family: monospace; transition: all 0.3s;
+        }
+        button:hover { background: #00cc66; transform: scale(1.02); box-shadow: 0 0 20px #00ff88; }
+        .result {
+            margin-top: 20px; padding: 20px; background: #06121e; border-radius: 10px;
+            display: none; border-left: 4px solid #00ff88;
+        }
+        .result a { color: #00ff88; word-break: break-all; }
+        .loader { display: none; text-align: center; margin: 20px; color: #00ff88; }
+        .supported { margin-top: 20px; font-size: 11px; color: #556677; text-align: center; }
+        .badge {
+            display: inline-block; background: #00ff8822; padding: 5px 10px;
+            border-radius: 5px; font-size: 10px; margin: 2px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>⚡ BYPASS LINK SHORTENER ⚡</h1>
+        <div class="sub">Gratis | Tanpa API Key | Support 15+ Platform</div>
+        
+        <textarea id="urlInput" placeholder="Masukkan link pendek (satu per baris)&#10;Contoh:&#10;https://v.gd/abc123&#10;https://bit.ly/xyz789&#10;https://sub2unlock.com/xxx"></textarea>
+        
+        <button onclick="bypassLinks()">🔓 BYPASS SEKARANG 🔓</button>
+        
+        <div class="loader" id="loader">⏳ Memproses bypass...</div>
+        <div class="result" id="result"></div>
+        
+        <div class="supported">
+            <strong>✅ Supported:</strong><br/>
+            <span class="badge">v.gd</span> <span class="badge">is.gd</span> <span class="badge">sfl.gl</span>
+            <span class="badge">linkvertise.com</span> <span class="badge">sub2unlock.com/me/io</span>
+            <span class="badge">bit.ly</span> <span class="badge">cutt.ly</span> <span class="badge">tinyurl.com</span>
+            <span class="badge">shorturl.at</span> <span class="badge">ouo.io</span> <span class="badge">rb.gy</span>
+            <span class="badge">shorte.st</span> <span class="badge">tiny.cc</span>
+        </div>
+    </div>
+
+    <script>
+        async function bypassLinks() {
+            const urls = document.getElementById('urlInput').value.trim().split('\n').filter(u => u.trim());
+            if (urls.length === 0) {
+                alert('Masukkan minimal satu link!');
+                return;
+            }
+            
+            document.getElementById('loader').style.display = 'block';
+            document.getElementById('result').style.display = 'none';
+            
+            const results = [];
+            
+            for (let i = 0; i < urls.length; i++) {
+                const url = urls[i].trim();
+                if (!url) continue;
+                
+                results.push(`<strong>🔗 Link ${i+1}:</strong> ${url}<br/>`);
+                
+                try {
+                    const response = await fetch('/api/bypass', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ url: url })
+                    });
+                    
+                    const data = await response.json();
+                    
+                    if (data.success && data.original_url) {
+                        results.push(`✅ <strong>Asli:</strong> <a href="${data.original_url}" target="_blank">${data.original_url}</a><br/>`);
+                        results.push(`📌 <em>Method: ${data.bypass_method}</em><br/><br/>`);
+                    } else {
+                        results.push(`❌ Gagal: ${data.error || 'Tidak terdukung'}<br/><br/>`);
+                    }
+                } catch(e) {
+                    results.push(`❌ Error: ${e.message}<br/><br/>`);
+                }
+            }
+            
+            document.getElementById('result').innerHTML = results.join('');
+            document.getElementById('result').style.display = 'block';
+            document.getElementById('loader').style.display = 'none';
+        }
+        
+        // Support paste multiple links at once
+        document.getElementById('urlInput').addEventListener('paste', (e) => {
+            setTimeout(() => {
+                const lines = document.getElementById('urlInput').value.split('\n');
+                if (lines.length > 1) {
+                    document.getElementById('urlInput').style.borderColor = '#00ff88';
+                }
+            }, 100);
+        });
+    </script>
+</body>
+</html>
